@@ -1,38 +1,35 @@
-# create-svelte
+# Run and write processing code on the web!
+_Processing Web is a web-based editor for Processing code. It allows you to write and run Processing code in your browser, and save your sketches in the cloud. It's built with [Code mirror](https://codemirror.net/), Firebase, and [Processing.js](http://processingjs.org/)._
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+## Features
+- Write Processing code in your browser with syntax highlighting
+- Run your code in the browser with Processing.js
+- Simple and intuitive UI
+- login with Email and password*
+- Save your sketches in the cloud*
+- create shareable links to your sketches*
+- Download your sketches as .pde files*
+- View other users' sketches*
+- View the most popular sketches*
+- View the newest sketches*
+- View your own sketches*
 
-## Creating a project
+*, not implemented yet
 
-If you're seeing this, you've probably already done this step. Congrats!
+## How to use
+- Go to [processingweb.com](https://processingweb.com)
+- Write your code in the editor
+- Click the run button to run your code
+- Happy coding!
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+## How to run locally
+- Clone this repository
+- Run `npm install`
+- Run `npm start`
+- Go to `localhost:(port)` in your browser
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+## How to contribute
+- Fork this repository
+- Make your changes
+- Submit a pull request
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.

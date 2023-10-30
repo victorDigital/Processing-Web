@@ -113,7 +113,7 @@ void draw() {
 	</div>
 {/if}
 
-<div class="p-2 overflow-hidden w-screen">
+<div class="p-2 overflow-hidden w-full">
 	<canvas id="processing" class="rounded-lg" />
 </div>
 

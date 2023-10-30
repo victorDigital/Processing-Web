@@ -79,12 +79,12 @@ void draw() {
 </svelte:head>
 
 <div class="m-2 w-[calc(100%-16px)] h-16 rounded-lg shadow-lg bg px-3 flex flex-col justify-center">
-	<p class="text-white font-mono text-lg">Processing Web_</p>
+	<p class="text-white font-mono text-lg">Untitled Sketch</p>
 	<p class="text-white opacity-60 font-mono text-sm">Made by Victor Østergaard Nielsen</p>
 </div>
 
 <div class="flex flex-row justify-between">
-	<div class="bg w-16 h-8 rounded-lg m-2 flex flex-row justify-evenly items-center">
+	<div class="bg w-20 h-10 rounded-lg m-2 flex flex-row justify-evenly items-center">
 		<button class="flex items-center" on:click={startProgram}
 			><span class="material-symbols-outlined text-green-500"> double_arrow </span></button
 		>
@@ -92,7 +92,10 @@ void draw() {
 			><span class="material-symbols-outlined text-red-500"> close </span></button
 		>
 	</div>
-	<div class="bg w-8 h-8 rounded-lg m-2 flex flex-row justify-evenly items-center">
+	<div class="bg w-20 h-10 rounded-lg m-2 flex flex-row justify-evenly items-center">
+		<button class="flex items-center"
+			><span class="material-symbols-outlined text-white"> fullscreen </span></button
+		>
 		<button class="flex items-center" on:click={toggleSettings}
 			><span class="material-symbols-outlined text-white"> settings </span></button
 		>

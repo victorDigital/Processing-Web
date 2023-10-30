@@ -1,7 +1,5 @@
 <script>
-    import { onMount } from "svelte";
-    import { goto } from "$app/navigation";
-    onMount(() => {
-        goto("/new");
-    });
+
 </script>
+
+<h1>landing page</h1>

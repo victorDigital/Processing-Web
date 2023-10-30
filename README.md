@@ -25,7 +25,7 @@ _Processing Web is a web-based editor for Processing code. It allows you to writ
 ## How to run locally
 - Clone this repository
 - Run `npm install`
-- Run `npm start`
+- Run `npm run dev`
 - Go to `localhost:(port)` in your browser
 
 ## How to contribute

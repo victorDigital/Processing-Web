@@ -25,6 +25,7 @@
 		"@codemirror/lang-java": "^6.0.1",
 		"@codemirror/lang-javascript": "^6.2.1",
 		"@codemirror/theme-one-dark": "^6.1.2",
+		"firebase": "^10.5.2",
 		"processing": "^0.2.0",
 		"svelte-codemirror-editor": "^1.1.0"
 	}

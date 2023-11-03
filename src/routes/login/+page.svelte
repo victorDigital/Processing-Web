@@ -1,60 +1,60 @@
 <script>
-	let email;
-	let password;
-
-	import { firebaseAuth } from '../../lib/firebase.js';
-	import { authStore, authHandlers } from '../../stores/authStore.js';
+	import { superForm } from 'sveltekit-superforms/client';
 	import { goto } from '$app/navigation';
+	export let data;
+	$: message = $form.message;
 
-	let success = undefined;
-
-	const login = async () => {
-		authHandlers
-			.login(email, password)
-			.then(() => {
-				success = true;
-				authStore.update((curr) => {
-					return {
-						...curr,
-                        uid: firebaseAuth.currentUser.uid,
-						isLoading: false,
-						currentUser: firebaseAuth.currentUser
-					};
-				});
-				goto('/app/home');
-			})
-			.catch((error) => {
-				const errorCode = error.code;
-				const errorMessage = error.message;
-				console.log(errorCode, errorMessage);
-
-				success = false;
-			});
-	};
+	// Client API:
+	const { form, errors, enhance } = superForm(data.form, {
+		onUpdated({ form }) {
+			if (form.valid) {
+				//if the redirect url is set in the url e.g. "login?redirect=http%3A%2F%2Flocalhost%3A5173%2Fapp%2Fsketch%2Fnew" go to that url otherwise go to the home page
+				const urlParams = new URLSearchParams(window.location.search);
+				const redirect = urlParams.get('redirect');
+				goto(redirect ? redirect : '/app/home');
+				
+			}
+			message = form.message;
+		}
+	});
 </script>
 
-<form
-	class="flex flex-col gap-4 p-8 space-y-4 bg-white sm:w-10/12"
-	on:submit|preventDefault={login}
->
-	{#if !success && success !== undefined}
-		<div class="p-8 text-red-500 bg-red-100">There was an error logging in. Please try again.</div>
-	{/if}
+<h1 class="text-2xl font-bold p-2 bg-base-200 mb-3">Login</h1>
+
+<form method="post" use:enhance on:submit|preventDefault={form.submit}>
+	<div class="pt-2" />
+	<label class="label-text" for="email">Email</label>
 	<input
-		type="email"
+		type="text"
+		name="email"
+		id="email"
 		placeholder="Email"
-		class="px-4 py-2 border border-gray-300 rounded-md"
-		required
-		bind:value={email}
+		class="input bg-base-200 rounded-none w-full"
+		bind:value={$form.email}
 	/>
+	{#if $errors.email}
+		<span class="text-error">{$errors.email}</span>
+	{/if}
+	<div class="pt-2" />
+	<label class="label-text" for="password">Password</label>
 	<input
 		type="password"
+		name="password"
+		id="password"
 		placeholder="Password"
-		class="px-4 py-2 border border-gray-300 rounded-md"
-		required
-		bind:value={password}
+		class="input bg-base-200 rounded-none w-full"
+		bind:value={$form.password}
 	/>
-
-	<button type="submit" class="default-action">Login</button>
+	{#if $errors.password}
+		<span class="text-error">{$errors.password}</span>
+	{/if}
+	<div class="pt-2" />
+	{#if message}
+		<p class="text-error">{message}</p>
+	{/if}
+	<button class="btn btn-info w-full rounded-none" type="submit">Login</button>
 </form>
-<a href="/register"> dont have an account? register here </a>
+
+<p class="opacity-50">
+	har du ikke en konto? <a class="btn btn-xs" href="/register">Lav en her!</a>
+</p>

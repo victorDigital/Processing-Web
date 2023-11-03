@@ -1,6 +1,7 @@
 <script>
-    import { authStore } from '../../../stores/authStore.js';
-    console.log($authStore)
+    export let data;
+    //console.log(data);
 </script>
 
-hi {$authStore.currentUser?.email}!
+<p>hello: {data.user.email}</p>
+<p>your uid is: {data.user.uid}</p>

@@ -25,8 +25,11 @@
 		"@codemirror/lang-java": "^6.0.1",
 		"@codemirror/lang-javascript": "^6.2.1",
 		"@codemirror/theme-one-dark": "^6.1.2",
+		"bcrypt": "^5.1.1",
 		"firebase": "^10.5.2",
 		"processing": "^0.2.0",
-		"svelte-codemirror-editor": "^1.1.0"
+		"svelte-codemirror-editor": "^1.1.0",
+		"sveltekit-superforms": "^1.9.0",
+		"zod": "^3.22.4"
 	}
 }

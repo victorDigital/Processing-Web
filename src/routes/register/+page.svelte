@@ -1,59 +1,70 @@
 <script>
-	let email;
-	let password;
-
-	import { firebaseAuth } from '../../lib/firebase.js';
-	import { authStore, authHandlers } from '../../stores/authStore.js';
+	import { superForm } from 'sveltekit-superforms/client';
 	import { goto } from '$app/navigation';
+	export let data;
+	$: message = $form.message;
 
-	let success = undefined;
-
-	const register = async () => {
-		authHandlers
-			.signup(email, password)
-			.then(() => {
-				success = true;
-                authStore.update((curr)=>{
-                    return {
-                        ...curr,
-                        uid: firebaseAuth.currentUser.uid,
-                        isLoading: false,
-                        currentUser: firebaseAuth.currentUser
-                    }
-                })
+	// Client API:
+	const { form, errors, enhance } = superForm(data.form, {
+		onUpdated({ form }) {
+			if (form.valid) {
 				goto('/app/home');
-			})
-			.catch((error) => {
-				const errorCode = error.code;
-				const errorMessage = error.message;
-				console.log(errorCode, errorMessage);
-
-				success = false;
-			});
-	};
+			}
+			message = form.message;
+		}
+	});
 </script>
 
-<form
-	class="flex flex-col gap-4 p-8 space-y-4 bg-white sm:w-10/12"
-	on:submit|preventDefault={register}
->
-	{#if !success && success !== undefined}
-		<div class="p-8 text-red-500 bg-red-100">There was an error registering. Please try again.</div>
-	{/if}
+<h1 class="text-2xl font-bold p-2 bg-base-200 mb-3">Register</h1>
+
+<form method="post" use:enhance on:submit|preventDefault={form.submit}>
+	<div class="pt-2" />
+	<label class="label-text" for="email">Email</label>
 	<input
-		type="email"
+		type="text"
+		name="email"
+		id="email"
 		placeholder="Email"
-		class="px-4 py-2 border border-gray-300 rounded-md"
-		required
-		bind:value={email}
+		class="input bg-base-200 rounded-none w-full"
+		bind:value={$form.email}
 	/>
+	{#if $errors.email}
+		<span class="text-error">{$errors.email}</span>
+	{/if}
+	<div class="pt-2" />
+	<label class="label-text" for="password">Password</label>
 	<input
 		type="password"
+		name="password"
+		id="password"
 		placeholder="Password"
-		class="px-4 py-2 border border-gray-300 rounded-md"
-		required
-		bind:value={password}
+		class="input bg-base-200 rounded-none w-full"
+		bind:value={$form.password}
 	/>
+	{#if $errors.password}
+		<span class="text-error">{$errors.password}</span>
+	{/if}
+	<div class="pt-2" />
 
-	<button type="submit" class="default-action">Register</button>
+	<label class="label-text" for="password2">Repeat Password</label>
+	<input
+		type="password"
+		name="password2"
+		id="password2"
+		placeholder="Repeat Password"
+		class="input bg-base-200 rounded-none w-full"
+		bind:value={$form.password2}
+	/>
+	{#if $errors.password2}
+		<span class="text-error">{$errors.password2}</span>
+	{/if}
+	<div class="pt-2" />
+	{#if message}
+		<p class="text-error">{message}</p>
+	{/if}
+	<button class="btn btn-info w-full rounded-none" type="submit">Tilmeld</button>
 </form>
+
+<p class="opacity-50">
+	har du allerede en konto? <a class="btn btn-xs" href="/login">Log ind her</a>
+</p>

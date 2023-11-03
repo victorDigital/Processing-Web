@@ -21,7 +21,7 @@ export async function load({ cookies }) {
         uid: uid,
         name: "Untitled Sketch",
         id: docId,
-        code: "",
+        code: "dm9pZCBzZXR1cCgpIHsKICBzaXplKDQwMCw0MDApOwogIC8vIHN0YXJ0dXAgY29kZSBnb2VzIGhlcmUKfQoKdm9pZCBkcmF3KCkgewogIC8vIGxvb3BpbmcgY29kZSBnb2VzIGhlcmUhCn0=", //basic template
         created: Date.now(),
         updated: Date.now()
     });

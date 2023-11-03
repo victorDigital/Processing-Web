@@ -6,6 +6,7 @@ export async function PUT({request}) {
     let b64Code = request.headers.get('code');
     let uid = request.headers.get('Authorization');
     let sketchId = request.headers.get('Sketch');
+    let Name = request.headers.get('Name');
 
     //update the sketch in the database
     const db = getFirestore();
@@ -22,7 +23,8 @@ export async function PUT({request}) {
     console.log(docId);
     await updateDoc(doc(db, "sketches", docId), {
         code: b64Code,
-        updated: Date.now()
+        updated: Date.now(),
+        name: Name,
     });
 
 

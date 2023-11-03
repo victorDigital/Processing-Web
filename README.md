@@ -5,14 +5,14 @@ _Processing Web is a web-based editor for Processing code. It allows you to writ
 - Write Processing code in your browser with syntax highlighting
 - Run your code in the browser with Processing.js
 - Simple and intuitive UI
-- login with Email and password*
-- Save your sketches in the cloud*
+- login with Email and password
+- Save your sketches in the cloud
 - create shareable links to your sketches*
 - Download your sketches as .pde files*
 - View other users' sketches*
 - View the most popular sketches*
 - View the newest sketches*
-- View your own sketches*
+- View your own sketches
 
 *, not implemented yet
 

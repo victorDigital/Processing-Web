@@ -15,6 +15,7 @@
 	let showCanvas = false;
 
 	let settingsOpen = false;
+	let editName = false;
 
 	let autoRun = true;
 	let darkMode = true;
@@ -45,12 +46,20 @@
 		}
 	};
 
+	let lastSave = Date.now();
+
 	const startProgram = () => {
 		if (showCanvas) {
 			stopProgram();
 		}
 		compile();
 		showCanvas = true;
+
+		//if there is more than 60 seconds since last save, save the sketch
+		if (Date.now() - lastSave > 60000) {
+			saveSketch();
+			lastSave = Date.now();
+		} 
 	};
 
 	const stopProgram = () => {
@@ -62,17 +71,33 @@
 		showCanvas = false;
 	};
 
-	const saveSketch = () => {
+	let success;
+	let loading;
+
+	const saveSketch = async () => {
 		console.log('save sketch');
 		//fetch the api with the code and id as a headers
+		success = false;
+		loading = true;
 		fetch('/api/savesketch', {
 			method: 'PUT',
 			headers: {
 				Authorization: data.user.uid,
 				Code: btoa(value),
 				Sketch: data.sketch.id,
-			},
-		})
+				Name: data.sketch.name
+			}
+		}).catch((error) => {
+			console.log(error);
+			success = false;
+			loading = false;
+		});
+		await new Promise((r) => setTimeout(r, 500));
+		success = true;
+
+		//wait 2 seconds
+		await new Promise((r) => setTimeout(r, 2500));
+		loading = false;
 	};
 </script>
 
@@ -85,7 +110,32 @@
 </svelte:head>
 
 <div class="m-2 w-[calc(100%-16px)] h-16 rounded-lg shadow-lg bg px-3 flex flex-col justify-center">
-	<p class="text-white font-mono text-lg">{data.sketch.name}</p>
+	<div class="flex flex-row group">
+		{#if editName}
+			<!-- svelte-ignore a11y-autofocus -->
+			<input
+				type="text"
+				class="bg-transparent text-white font-mono text-lg"
+				value={data.sketch.name}
+				on:input={(e) => (data.sketch.name = e.target.value)}
+				on:blur={() => {
+					editName = false;
+					saveSketch();
+				}}
+				autofocus
+			/>
+		{:else}
+			<p class="text-white font-mono text-lg">{data.sketch.name}</p>
+			<button
+				class="flex items-center ml-2 opacity-0 group-hover:opacity-100 transition-all duration-75"
+				on:click={() => {
+					editName = true;
+				}}
+			>
+				<span class="material-symbols-outlined text-white"> edit </span>
+			</button>
+		{/if}
+	</div>
 	<p class="text-white opacity-60 font-mono text-sm">Made by TODO</p>
 </div>
 
@@ -102,9 +152,33 @@
 		<!-- <button class="flex px-3 pr-0 items-center"
 			><span class="material-symbols-outlined text-white"> fullscreen </span></button
 		> -->
-		<button class="flex px-3 pr-0 items-center" on:click={saveSketch}
-			><span class="material-symbols-outlined text-white"> save </span></button
-		>
+		<div class="relative px-3 ml-3 h-6 w-6">
+			{#if !loading}
+				<button
+					class="flex -translate-x-3 absolute items-center"
+					on:click={saveSketch}
+					in:fly={{delay: 300,  y: 16, duration: 300, easing: quintOut }}
+					out:fly={{ y: -16, duration: 300, easing: quintIn }}
+					><span class="material-symbols-outlined text-white"> save </span></button
+				>
+			{:else if loading && !success}
+				<div
+					class="flex -translate-x-3 absolute items-center"
+					in:fly={{delay: 300,  y: 16, duration: 300, easing: quintOut }}
+					out:fly={{ y: -16, duration: 300, easing: quintIn }}
+				>
+					<span class="material-symbols-outlined text-white animate-spin"> sync </span>
+				</div>
+			{:else}
+				<div
+					class="flex -translate-x-3 absolute items-center"
+					in:fly={{delay: 300,  y: 16, duration: 300, easing: quintOut }}
+					out:fly={{ y: -16, duration: 300, easing: quintIn }}
+				>
+					<span class="material-symbols-outlined text-green-500 animate-pulse"> cloud_done </span>
+				</div>
+			{/if}
+		</div>
 		<button class="flex px-3 items-center" on:click={toggleSettings}
 			><span class="material-symbols-outlined text-white"> settings </span></button
 		>
@@ -189,8 +263,7 @@
 						<button
 							type="button"
 							class="inline-flex w-full justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
-							on:click={toggleSettings}
-							>Ok</button
+							on:click={toggleSettings}>Ok</button
 						>
 					</div>
 				</div>

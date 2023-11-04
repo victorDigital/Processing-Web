@@ -8,6 +8,8 @@
 
 	let value = atob(data.sketch.code);
 
+	let isPublic = data.sketch.public;
+
 	import { onMount } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import { quintIn, quintOut } from 'svelte/easing';
@@ -59,10 +61,14 @@
 		if (Date.now() - lastSave > 60000) {
 			saveSketch();
 			lastSave = Date.now();
-		} 
+		}
 	};
 
 	const stopProgram = () => {
+		if (!p5) {
+			return;
+		}
+
 		p5.exit();
 		//clear the canvas
 		var canvas = document.getElementById('processing');
@@ -99,13 +105,30 @@
 		await new Promise((r) => setTimeout(r, 2500));
 		loading = false;
 	};
+
+	let lastVisibleChange = Date.now();
+	const changeVisibility = async () => {
+		if (Date.now() - lastVisibleChange < 6000) {
+			return;
+		}
+		console.log('change visibility');
+		fetch('/api/changesketchvisibility', {
+			method: 'PUT',
+			headers: {
+				Authorization: data.user.uid,
+				Sketch: data.sketch.id,
+				Visibility: !isPublic
+			}
+		}).catch((error) => {
+			console.log(error);
+		}).then(() => {
+			isPublic = !isPublic;
+			lastVisibleChange = Date.now();
+		});
+	};
 </script>
 
 <svelte:head>
-	<link
-		rel="stylesheet"
-		href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0"
-	/>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/processing.js/1.6.0/processing.js"></script>
 </svelte:head>
 
@@ -136,7 +159,7 @@
 			</button>
 		{/if}
 	</div>
-	<p class="text-white opacity-60 font-mono text-sm">Made by TODO</p>
+	<p class="text-white opacity-60 font-mono text-sm">Made by {data.sketch.maker}</p>
 </div>
 
 <div class="flex flex-row justify-between">
@@ -153,18 +176,58 @@
 			><span class="material-symbols-outlined text-white"> fullscreen </span></button
 		> -->
 		<div class="relative px-3 ml-3 h-6 w-6">
+			{#if !showCanvas}
+				<button
+					class="flex -translate-x-3 absolute items-center"
+					on:click={startProgram}
+					in:fly={{ delay: 300, y: 16, duration: 300, easing: quintOut }}
+					out:fly={{ y: -16, duration: 300, easing: quintIn }}
+					><span class="material-symbols-outlined text-white"> play_arrow </span></button
+				>
+			{:else}
+				<button
+					class="flex -translate-x-3 absolute items-center"
+					on:click={stopProgram}
+					in:fly={{ delay: 300, y: 16, duration: 300, easing: quintOut }}
+					out:fly={{ y: -16, duration: 300, easing: quintIn }}
+					><span class="material-symbols-outlined text-white"> pause </span></button
+				>
+			{/if}
+		</div>
+
+		<div class="relative px-3 ml-3 h-6 w-6">
+			{#if isPublic}
+				<button
+					class="flex -translate-x-3 absolute items-center"
+					on:click={changeVisibility}
+					in:fly={{ delay: 300, y: 16, duration: 300, easing: quintOut }}
+					out:fly={{ y: -16, duration: 300, easing: quintIn }}
+					><span class="material-symbols-outlined text-white"> public </span></button
+				>
+			{:else}
+				<button
+					class="flex -translate-x-3 absolute items-center"
+					on:click={changeVisibility}
+					in:fly={{ delay: 300, y: 16, duration: 300, easing: quintOut }}
+					out:fly={{ y: -16, duration: 300, easing: quintIn }}
+					><span class="material-symbols-outlined text-white"> public_off </span></button
+				>
+			{/if}
+		</div>
+
+		<div class="relative px-3 ml-3 h-6 w-6">
 			{#if !loading}
 				<button
 					class="flex -translate-x-3 absolute items-center"
 					on:click={saveSketch}
-					in:fly={{delay: 300,  y: 16, duration: 300, easing: quintOut }}
+					in:fly={{ delay: 300, y: 16, duration: 300, easing: quintOut }}
 					out:fly={{ y: -16, duration: 300, easing: quintIn }}
 					><span class="material-symbols-outlined text-white"> save </span></button
 				>
 			{:else if loading && !success}
 				<div
 					class="flex -translate-x-3 absolute items-center"
-					in:fly={{delay: 300,  y: 16, duration: 300, easing: quintOut }}
+					in:fly={{ delay: 300, y: 16, duration: 300, easing: quintOut }}
 					out:fly={{ y: -16, duration: 300, easing: quintIn }}
 				>
 					<span class="material-symbols-outlined text-white animate-spin"> sync </span>
@@ -172,7 +235,7 @@
 			{:else}
 				<div
 					class="flex -translate-x-3 absolute items-center"
-					in:fly={{delay: 300,  y: 16, duration: 300, easing: quintOut }}
+					in:fly={{ delay: 300, y: 16, duration: 300, easing: quintOut }}
 					out:fly={{ y: -16, duration: 300, easing: quintIn }}
 				>
 					<span class="material-symbols-outlined text-green-500 animate-pulse"> cloud_done </span>

@@ -46,6 +46,8 @@ export const actions = {
             switch (err.message) {
                 case "Firebase: Error (auth/invalid-login-credentials).":
                     return message(form, "Wrong password or email");
+                case "Firebase: Error (auth/user-disabled).":
+                    return message(form, "Your account has been disabled");
                 default:
                     return message(form, "Error logging in");
             }

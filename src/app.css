@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    :root {
+        --color-primary: 14 121 178;
+        --color-secondary: 25 25 35;
+        --color-content: 251 254 249;
+        /* ... */
+    }
+}
+
+@media (prefers-reduced-motion) {
+
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        animation: none !important;
+    }
+}

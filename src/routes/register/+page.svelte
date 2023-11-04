@@ -19,6 +19,19 @@
 
 <form method="post" use:enhance on:submit|preventDefault={form.submit}>
 	<div class="pt-2" />
+	<label class="label-text" for="username">Username</label>
+	<input
+		type="text"
+		name="username"
+		id="username"
+		placeholder="Username"
+		class="input bg-base-200 rounded-none w-full"
+		bind:value={$form.username}
+	/>
+	{#if $errors.username}
+		<span class="text-error">{$errors.username}</span>
+	{/if}
+	<div class="pt-2" />
 	<label class="label-text" for="email">Email</label>
 	<input
 		type="text"

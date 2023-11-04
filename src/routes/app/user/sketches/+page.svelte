@@ -1,6 +1,7 @@
 <script>
     export let data;
     let sketches = data.sketches ?? [];
+    console.log(sketches);
 </script>
 
 <h1>My Sketches</h1>
@@ -9,6 +10,7 @@
     <thead>
         <tr>
             <th>name</th>
+            <th>visibility</th>
             <th>actions</th>
         </tr>
     </thead>
@@ -16,6 +18,7 @@
         {#each sketches as sketch}
         <tr>
             <td>{sketch.name}</td>
+            <td>{sketch.public ? "Public" : "Private"}</td>
             <td data-sveltekit-preload-data="tap">
                 <a href="/app/sketch/{sketch.id}">edit</a>
                 <a href="/app/sketch/{sketch.id}/delete">delete</a>

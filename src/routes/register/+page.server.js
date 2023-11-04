@@ -6,6 +6,7 @@ import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import bcrypt from 'bcrypt';
 
 const schema = z.object({
+    username: z.string().min(3).max(32),
     email: z.string().email(),
     password: z.string().min(8).max(32),
     password2: z.string().min(8).max(32),
@@ -39,6 +40,14 @@ export const actions = {
                     user = userCredential.user;
                     success = true;
                 });
+
+            //update the user profile
+            if (user) {
+                await updateProfile(user, {
+                    displayName: form.data.username,
+                    photoURL: null
+                });
+            }
         } catch (e) {
             err = e;
         }

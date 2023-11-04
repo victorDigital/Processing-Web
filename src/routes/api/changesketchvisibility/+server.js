@@ -6,6 +6,7 @@ export async function PUT({request}) {
     let uid = request.headers.get('Authorization');
     let sketchId = request.headers.get('Sketch');
     let visibility = request.headers.get('Visibility');
+    console.log(visibility);
 
     //update the sketch in the database
     const db = getFirestore();
@@ -25,6 +26,6 @@ export async function PUT({request}) {
         public: visibility,
     });
 
-    console.log(uid,sketchId);
+    console.log(sketchId, visibility);
     return new Response();
 };

@@ -8,7 +8,7 @@
 
 	let value = atob(data.sketch.code);
 
-	let isPublic = data.sketch.public;
+	let isPublic = data.sketch.public == "true" ? true : false;
 
 	import { onMount } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
@@ -108,9 +108,6 @@
 
 	let lastVisibleChange = Date.now();
 	const changeVisibility = async () => {
-		if (Date.now() - lastVisibleChange < 6000) {
-			return;
-		}
 		console.log('change visibility');
 		fetch('/api/changesketchvisibility', {
 			method: 'PUT',

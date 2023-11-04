@@ -18,7 +18,7 @@
         {#each sketches as sketch}
         <tr>
             <td>{sketch.name}</td>
-            <td>{sketch.public ? "Public" : "Private"}</td>
+            <td>{sketch.public == "true" ? 'public' : 'private'}</td>
             <td data-sveltekit-preload-data="tap">
                 <a href="/app/sketch/{sketch.id}">edit</a>
                 <a href="/app/sketch/{sketch.id}/delete">delete</a>

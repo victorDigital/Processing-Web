@@ -16,7 +16,6 @@ export async function load({ request, cookies }) {
 
     const auth = getAuth();
     if (auth.currentUser) {
-        console.log(auth.currentUser.uid);
     } else {
         let prevUrl = request.url;
         throw redirect(302, "/login?redirect=" + encodeURIComponent(prevUrl));

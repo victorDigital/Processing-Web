@@ -39,7 +39,6 @@ export async function load({ cookies }) {
         comments: [],
         usersLiked: {},
     });
-    console.log( name + " written with ID: ", docRef.id);
 
     
 

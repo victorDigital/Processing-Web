@@ -1,11 +1,26 @@
 <script>
-    import { invalidateAll } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
 	console.log(data);
+	import { quintInOut } from 'svelte/easing';
+	import { crossfade } from 'svelte/transition';
+	import { flip } from 'svelte/animate';
 
-    let lastUpdate = Date.now();
+	const [send, receive] = crossfade({
+		fallback(node, params) {
+			const style = getComputedStyle(node);
+			const transform = style.transform === 'none' ? '' : style.transform;
+
+			return {
+				duration: 20,
+				easing: quintInOut
+			};
+		}
+	});
+
+	let lastUpdate = Date.now();
 
 	const likeSketch = (id, i) => {
 		/* let sketch = data.sketches.find((sketch) => sketch.id === id);
@@ -18,9 +33,9 @@
 				Sketch: id
 			}
 		}).finally(() => {
-            invalidateAll();
-            lastUpdate = Date.now();
-        });
+			invalidateAll();
+			lastUpdate = Date.now();
+		});
 	};
 </script>
 
@@ -29,13 +44,22 @@
 	<div class="mt-3">
 		<!-- bg-base-200 p-2 mt-3 rounded-t-2xl -->
 		<div class="grid gap-2 xl:grid-cols-5 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2">
-            {#key lastUpdate}
-                {#each data.sketches as sketch, i}
-                    <div class="w-full h-fit bg-base-200 rounded-lg">
-                        <div class="p-2">
-                            <h2 class="font-bold text-lg">{sketch.name}</h2>
-                            <p>By: {sketch.maker}</p>
-                        </div>
+			{#key lastUpdate}
+				{#each data.sketches as sketch, i (sketch.id)}
+					<div
+						in:receive={{ key: sketch.id, duration: 400 }}
+						out:send={{ key: sketch.id, duration: 400 }}
+						animate:flip={{ duration: 400 }}
+					>
+						<a
+							class="w-full h-fit bg-base-200 text-left"
+							href="/app/sketch/{sketch.id}/view"
+						>
+							<div class="p-2 bg-base-200 rounded-t-lg">
+								<h2 class="font-bold text-lg line-clamp-1">{sketch.name}</h2>
+								<p class="line-clamp-1">By: {sketch.maker}</p>
+							</div>
+						</a>
                         <div
                             class="w-full flex flex-row h-8 items-center justify-start bg-base-300 p-2 rounded-b-lg"
                         >
@@ -53,9 +77,9 @@
                                 <span class="font-space text-xl pl-1">{sketch.likes}</span>
                             </button>
                         </div>
-                    </div>
-                {/each}
-            {/key}
+					</div>
+				{/each}
+			{/key}
 		</div>
 	</div>
 </div>

@@ -15,7 +15,6 @@ export async function load({ params }) {
         sketch = doc.data();
         docId = doc.id;
     });
-    console.log(docId);
     await deleteDoc(doc(db, "sketches", docId));
     throw redirect(302, "/app/home");
 };

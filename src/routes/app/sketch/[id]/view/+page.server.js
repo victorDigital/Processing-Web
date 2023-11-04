@@ -1,4 +1,4 @@
-import { getFirestore, collection, query, where, getDocs } from "firebase/firestore";
+import { getFirestore, collection, query, where, getDocs, updateDoc, doc } from "firebase/firestore";
 import { redirect } from "@sveltejs/kit";
 
 export async function load({ cookies, params }) {
@@ -17,19 +17,26 @@ export async function load({ cookies, params }) {
     const querySnapshot = await getDocs(q);
     //list the sketches
     let sketch = null;
+    let docId = null;
     querySnapshot.forEach((doc) => {
         sketch = doc.data();
+        docId = doc.id;
     });
     if (sketch == null) {
         throw redirect(302, "/app/home");
     }
 
     // if sketch.uid and uid are different, then return a redirect to the sketch's owner's page
-    if (sketch.uid != uid) {
+    if (sketch.uid != uid && sketch.public != "true") {
         throw redirect(302, "/app/home");
     }
 
+    //increment the views and update the database
+    console.log(sketch);
+    sketch.views += 1;
+    await updateDoc(doc(db, "sketches", docId), {
+        views: sketch.views,
+    });
 
-
-    return { sketch };
+    return { sketch: {...sketch, uid: ""} };
 };

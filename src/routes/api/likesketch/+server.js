@@ -25,14 +25,11 @@ export async function PUT({request}) {
     //the usersLiked object is a map of users who liked the sketch, the uid is the key and the value is true
     //if the user has already liked the sketch, unlike it
     let keys = Object.keys(usersLiked);
-    console.log(keys);
     if (keys.includes(uid)) {
-        console.log("unlike");
         //remove the user from the list of users who liked the sketch
         delete usersLiked[uid];
         totalLikes--;
     } else {
-        console.log("like");
         usersLiked[uid] = true;
         totalLikes++;
     }
@@ -42,6 +39,5 @@ export async function PUT({request}) {
         likes: totalLikes,
     });
 
-    console.log(uid,sketchId);
     return new Response();
 };

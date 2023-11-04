@@ -16,7 +16,6 @@ export async function load({ cookies }) {
         sketches.push(doc.data());
     });
 
-    console.log(sketches);
 
     return { sketches };
 };

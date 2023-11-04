@@ -1,12 +1,17 @@
 import { collection, getFirestore, doc, query, where, updateDoc, getDocs } from "firebase/firestore";
 
 
-export async function PUT({request}) {
+export async function PUT({request, cookies }) {
     //log the headers
     let b64Code = request.headers.get('code');
     let uid = request.headers.get('Authorization');
     let sketchId = request.headers.get('Sketch');
     let Name = request.headers.get('Name');
+
+    let userUid = JSON.parse(cookies.get('user')).uid;
+    if (userUid != uid) {
+        return new Response("Unauthorized", { status: 401 });
+    }
 
     //update the sketch in the database
     const db = getFirestore();
@@ -20,15 +25,12 @@ export async function PUT({request}) {
         sketch = doc.data();
         docId = doc.id;
     });
-    console.log(docId);
+
     await updateDoc(doc(db, "sketches", docId), {
         code: b64Code,
         updated: Date.now(),
         name: Name,
     });
 
-
-
-    console.log(uid,sketchId);
     return new Response();
 };

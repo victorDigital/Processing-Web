@@ -88,7 +88,7 @@
 		fetch('/api/savesketch', {
 			method: 'PUT',
 			headers: {
-				Authorization: data.user.uid,
+				Authorization: data.sketch.uid,
 				Code: btoa(value),
 				Sketch: data.sketch.id,
 				Name: data.sketch.name
@@ -106,13 +106,11 @@
 		loading = false;
 	};
 
-	let lastVisibleChange = Date.now();
 	const changeVisibility = async () => {
-		console.log('change visibility');
-		fetch('/api/changesketchvisibility', {
+		await fetch('/api/changesketchvisibility', {
 			method: 'PUT',
 			headers: {
-				Authorization: data.user.uid,
+				Authorization: data.sketch.uid,
 				Sketch: data.sketch.id,
 				Visibility: !isPublic
 			}
@@ -120,7 +118,6 @@
 			console.log(error);
 		}).then(() => {
 			isPublic = !isPublic;
-			lastVisibleChange = Date.now();
 		});
 	};
 </script>

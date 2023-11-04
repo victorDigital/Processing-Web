@@ -16,7 +16,10 @@ export async function load({ cookies }) {
         sketches.push({...doc.data(), uid: ""});
     });
 
-    console.log("ran");
+    //return the sketches in order of most likes
+    sketches.sort((a,b) => {
+        return b.likes - a.likes;
+    });
 
     return { sketches };
 };

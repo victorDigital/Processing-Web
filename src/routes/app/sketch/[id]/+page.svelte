@@ -2,13 +2,14 @@
 	import CodeMirror from 'svelte-codemirror-editor';
 	import { java } from '@codemirror/lang-java';
 	import { oneDark } from '@codemirror/theme-one-dark';
+	import { invalidateAll } from '$app/navigation';
 
 	export let data;
 	console.log(data);
 
 	let value = atob(data.sketch.code);
 
-	let isPublic = data.sketch.public == "true" ? true : false;
+	let isPublic = data.sketch.public == 'true' ? true : false;
 
 	import { onMount } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
@@ -102,6 +103,7 @@
 		success = true;
 
 		//wait 2 seconds
+		invalidateAll();
 		await new Promise((r) => setTimeout(r, 2500));
 		loading = false;
 	};
@@ -114,11 +116,13 @@
 				Sketch: data.sketch.id,
 				Visibility: !isPublic
 			}
-		}).catch((error) => {
-			console.log(error);
-		}).then(() => {
-			isPublic = !isPublic;
-		});
+		})
+			.catch((error) => {
+				console.log(error);
+			})
+			.then(() => {
+				isPublic = !isPublic;
+			});
 	};
 </script>
 
@@ -126,97 +130,89 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/processing.js/1.6.0/processing.js"></script>
 </svelte:head>
 
-<div class="m-2 w-[calc(100%-16px)] h-16 rounded-lg shadow-lg bg px-3 flex flex-col justify-center">
-	<div class="flex flex-row group">
-		{#if editName}
-			<!-- svelte-ignore a11y-autofocus -->
-			<input
-				type="text"
-				class="bg-transparent text-white font-mono text-lg"
-				value={data.sketch.name}
-				on:input={(e) => (data.sketch.name = e.target.value)}
-				on:blur={() => {
-					editName = false;
-					saveSketch();
-				}}
-				autofocus
-			/>
-		{:else}
-			<p class="text-white font-mono text-lg">{data.sketch.name}</p>
-			<button
-				class="flex items-center ml-2 opacity-0 group-hover:opacity-100 transition-all duration-75"
-				on:click={() => {
-					editName = true;
-				}}
-			>
-				<span class="material-symbols-outlined text-white"> edit </span>
-			</button>
-		{/if}
+<div class="flex flex-col justify-between shadow-lg items-start w-full">
+	<div class="p-2 w-full h-16 px-3 flex flex-col justify-center">
+		<div class="flex flex-row group">
+			{#if editName}
+				<!-- svelte-ignore a11y-autofocus -->
+				<input
+					type="text"
+					class="bg-transparent font-mono text-lg"
+					value={data.sketch.name}
+					on:input={(e) => (data.sketch.name = e.target.value)}
+					on:blur={() => {
+						editName = false;
+						saveSketch();
+					}}
+					autofocus
+				/>
+			{:else}
+				<p class=" font-mono text-lg">{data.sketch.name}</p>
+				<button
+					class="flex items-center ml-2 opacity-0 group-hover:opacity-100 transition-all duration-75"
+					on:click={() => {
+						editName = true;
+					}}
+				>
+					<span class="material-symbols-outlined"> edit </span>
+				</button>
+			{/if}
+		</div>
+		<div class="flex flex-row">
+			<p class="opacity-60 font-mono text-sm">Made by {data.sketch.maker}</p>
+			<div class="divider divider-horizontal"></div>
+			<p class="opacity-60 font-mono text-sm">Last edited {new Date(data.sketch.updated).toDateString()}</p>
+		</div>
 	</div>
-	<p class="text-white opacity-60 font-mono text-sm">Made by {data.sketch.maker}</p>
-</div>
-
-<div class="flex flex-row justify-between">
-	<div class="bg w-20 h-10 rounded-lg m-2 flex flex-row justify-evenly items-center">
-		<button class="flex items-center" on:click={startProgram}
-			><span class="material-symbols-outlined text-green-500"> double_arrow </span></button
-		>
-		<button class="flex items-center" on:click={stopProgram}
-			><span class="material-symbols-outlined text-red-500"> close </span></button
-		>
-	</div>
-	<div class="bg w-fit h-10 rounded-lg m-2 flex flex-row justify-evenly items-center">
-		<!-- <button class="flex px-3 pr-0 items-center"
-			><span class="material-symbols-outlined text-white"> fullscreen </span></button
-		> -->
-		<div class="relative px-3 ml-3 h-6 w-6">
+	<div class="flex flex-row justify-end bg-base-200 p-2 w-full">
+		<div class="relative px-3 h-6 w-6">
 			{#if !showCanvas}
 				<button
-					class="flex -translate-x-3 absolute items-center"
+					class="flex -translate-x-3 absolute items-center tooltip" data-tip="Run program"
 					on:click={startProgram}
 					in:fly={{ delay: 300, y: 16, duration: 300, easing: quintOut }}
 					out:fly={{ y: -16, duration: 300, easing: quintIn }}
-					><span class="material-symbols-outlined text-white"> play_arrow </span></button
+					><span class="material-symbols-outlined"> play_arrow </span></button
 				>
 			{:else}
 				<button
-					class="flex -translate-x-3 absolute items-center"
+					class="flex -translate-x-3 absolute items-center tooltip" data-tip="Stop program"
 					on:click={stopProgram}
 					in:fly={{ delay: 300, y: 16, duration: 300, easing: quintOut }}
 					out:fly={{ y: -16, duration: 300, easing: quintIn }}
-					><span class="material-symbols-outlined text-white"> pause </span></button
+					><span class="material-symbols-outlined"> pause </span></button
 				>
 			{/if}
 		</div>
-
+	
 		<div class="relative px-3 ml-3 h-6 w-6">
 			{#if isPublic}
 				<button
-					class="flex -translate-x-3 absolute items-center"
+					class="flex -translate-x-3 absolute items-center tooltip" data-tip="Make sketch private"
 					on:click={changeVisibility}
 					in:fly={{ delay: 300, y: 16, duration: 300, easing: quintOut }}
 					out:fly={{ y: -16, duration: 300, easing: quintIn }}
-					><span class="material-symbols-outlined text-white"> public </span></button
+					><span class="material-symbols-outlined"> public </span></button
 				>
 			{:else}
 				<button
-					class="flex -translate-x-3 absolute items-center"
+					class="flex -translate-x-3 absolute items-center tooltip" data-tip="Make sketch public"
 					on:click={changeVisibility}
 					in:fly={{ delay: 300, y: 16, duration: 300, easing: quintOut }}
 					out:fly={{ y: -16, duration: 300, easing: quintIn }}
-					><span class="material-symbols-outlined text-white"> public_off </span></button
+					><span class="material-symbols-outlined"> public_off </span></button
 				>
 			{/if}
 		</div>
-
+	
 		<div class="relative px-3 ml-3 h-6 w-6">
 			{#if !loading}
 				<button
-					class="flex -translate-x-3 absolute items-center"
+					class="flex -translate-x-3 absolute items-center tooltip" data-tip="Save sketch"
 					on:click={saveSketch}
 					in:fly={{ delay: 300, y: 16, duration: 300, easing: quintOut }}
 					out:fly={{ y: -16, duration: 300, easing: quintIn }}
-					><span class="material-symbols-outlined text-white"> save </span></button
+					><span class="material-symbols-outlined"> save </span></button
 				>
 			{:else if loading && !success}
 				<div
@@ -224,7 +220,7 @@
 					in:fly={{ delay: 300, y: 16, duration: 300, easing: quintOut }}
 					out:fly={{ y: -16, duration: 300, easing: quintIn }}
 				>
-					<span class="material-symbols-outlined text-white animate-spin"> sync </span>
+					<span class="material-symbols-outlined animate-spin"> sync </span>
 				</div>
 			{:else}
 				<div
@@ -232,17 +228,17 @@
 					in:fly={{ delay: 300, y: 16, duration: 300, easing: quintOut }}
 					out:fly={{ y: -16, duration: 300, easing: quintIn }}
 				>
-					<span class="material-symbols-outlined text-green-500 animate-pulse"> cloud_done </span>
+					<span class="material-symbols-outlined text-green-700 animate-pulse"> cloud_done </span>
 				</div>
 			{/if}
 		</div>
-		<button class="flex px-3 items-center" on:click={toggleSettings}
-			><span class="material-symbols-outlined text-white"> settings </span></button
+		<button class="flex px-3 items-center tooltip tooltip-left" data-tip="Open settings" on:click={toggleSettings}
+			><span class="material-symbols-outlined"> settings </span></button
 		>
 	</div>
 </div>
 
-<div class="m-2 mt-0 rounded-lg overflow-hidden trans">
+<div class="overflow-hidden w-full trans">
 	{#if darkMode}
 		<CodeMirror bind:value lang={java()} theme={oneDark} on:change={autoRunProgram} />
 	{:else}
@@ -251,7 +247,7 @@
 </div>
 
 {#if showError}
-	<div class="bg-red-500 text-white p-2 rounded-lg m-2">
+	<div class="bg-red-500 p-2 rounded-lg m-2">
 		<p>{errorMessage}</p>
 	</div>
 {/if}
@@ -319,7 +315,7 @@
 					<div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
 						<button
 							type="button"
-							class="inline-flex w-full justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
+							class="inline-flex w-full justify-center rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold shadow-sm hover:bg-blue-500 sm:ml-3 sm:w-auto"
 							on:click={toggleSettings}>Ok</button
 						>
 					</div>
@@ -328,9 +324,3 @@
 		</div>
 	</div>
 {/if}
-
-<style>
-	.bg {
-		background-color: #282c34;
-	}
-</style>

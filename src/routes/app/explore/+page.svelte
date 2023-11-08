@@ -4,6 +4,12 @@
 	/** @type {import('./$types').PageData} */
 	export let data;
 	console.log(data);
+
+	let disableButtons = [];
+	data.sketches.forEach((sketch) => {
+		disableButtons.push(false);
+	});
+
 	import { quintInOut } from 'svelte/easing';
 	import { crossfade } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
@@ -35,6 +41,7 @@
 			data.sketches[i].usersLiked[data.user.uid] = true;
 		}
 
+		disableButtons[i] = true;
 		fetch('/api/likesketch', {
 			method: 'PUT',
 			headers: {
@@ -43,7 +50,9 @@
 				Sketch: id
 			}
 		}).finally(() => {
-			invalidateAll();
+			invalidateAll().finally(() => {
+				disableButtons[i] = false;
+			});
 			lastUpdate = Date.now();
 		});
 	};
@@ -83,14 +92,21 @@
 								<span class="font-space text-xl pl-1">{sketch.comments.length}</span>
 							</button>
 							<div class="divider divider-horizontal" />
-							<button class="flex items-center" on:click={likeSketch(sketch.id, i)}>
-								{#if Object.keys(sketch.usersLiked).includes(data.user.uid)}
-									<span class="material-symbols-outlined text-red-500"> favorite </span>
-								{:else}
-									<span class="material-symbols-outlined"> favorite </span>
-								{/if}
-								<span class="font-space text-xl pl-1">{sketch.likes}</span>
-							</button>
+							{#if !disableButtons[i]}
+								 <button class="flex items-center" on:click={likeSketch(sketch.id, i)}>
+									 {#if Object.keys(sketch.usersLiked).includes(data.user.uid)}
+										 <span class="material-symbols-outlined text-red-500"> favorite </span>
+									 {:else}
+										 <span class="material-symbols-outlined "> favorite </span>
+									 {/if}
+									 <span class="font-space text-xl pl-1">{sketch.likes}</span>
+								 </button>
+							{:else}
+								 <div class="flex items-center cursor-wait select-none">
+									<span class="material-symbols-outlined animate-pulse"> favorite </span>
+									<span class="font-space text-xl pl-1">{sketch.likes}</span>
+								 </div>
+							{/if}
 						</div>
 					</div>
 				{/each}

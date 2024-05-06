@@ -21,5 +21,5 @@ export async function load({ request, cookies }) {
         throw redirect(302, "/login?redirect=" + encodeURIComponent(prevUrl));
     }
 
-    return {user: JSON.parse(user)};
+    return { user: JSON.parse(user) };
 };
